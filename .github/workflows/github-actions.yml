@@ -38,8 +38,8 @@ jobs:
 
   dev-deploy:
     needs: [test]
+    if: contains(github.ref, 'develop')
     runs-on: ubuntu-latest
-    if: contains(github.ref, "develop")
     steps:
       - name: deploy dev project
         run: echo "This job will run after test is complete for $PROJECT_ID"
@@ -49,8 +49,8 @@ jobs:
       
   test-deploy:
     needs: [test]
+    if: contains(github.ref, '/^release.*$/') || contains(github.ref, '/^hotfix.*$/')
     runs-on: ubuntu-latest
-    if: contains(github.ref, "/^release.*$/") || contains(github.ref, "/^hotfix.*$/") 
     steps:
       - name: deploy test project
         run: echo "This job will run after test is complete for $PROJECT_ID"
@@ -60,15 +60,14 @@ jobs:
 
   prod-deploy:
     needs: [test]
+    if: contains(github.ref, 'master')
     runs-on: ubuntu-latest
-    if: contains(github.ref, "master") 
     steps:
       - name: deploy prod project
         run: echo "This job will run after test is complete for $PROJECT_ID"
         env:
           GCP_APP_BUCKET: "PROJECT_PROD_BUCKET_NAME"
           PROJECT_ID: ${{ secrets.GCP_PROJECT_PROD }}
-
 
 ##### publish #########################################################
 
