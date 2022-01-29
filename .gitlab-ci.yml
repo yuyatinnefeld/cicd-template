@@ -76,6 +76,8 @@ bandit:
   image: ${CLOUD_SDK_IMAGE}
   before_script:
     - gcloud auth activate-service-account --key-file ${GCP_SERVICE_ACCOUNT_KEY}
+    - PROJECT_ID_CURRENT=$(gcloud config get-value project)
+    - echo $PROJECT_ID_CURRENT
   script:
     - gcloud config set project ${PROJECT_ID}
     - echo "deploying ${CI_JOB_NAME}...."

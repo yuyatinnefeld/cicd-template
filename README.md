@@ -1,6 +1,6 @@
 # CI/CD Template
-- Gitlab
-- Github
+- Gitlab (.gitlab-ci.yml)
+- Github (.github/workflows/github-actions.yml)
 
 ## SDK / Language
 - Python
