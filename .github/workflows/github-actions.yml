@@ -27,11 +27,45 @@ jobs:
 
 ##### deploy #########################################################
 
-  deploy_ab:
+  deploy-any:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
-      - run: echo "This job will run after test_ab is complete"
+      - run: echo "This job will run after test is complete for ${{ secrets.GCP_PROJECT_DEV }}"
+      env:
+        GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+        PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
+    on:
+      push:
+        branches:
+          - develop
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - run: echo "This job will run after test is complete"
+      env:
+        GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+        PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
+
+  deploy-test:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - run: echo "This job will run after test is complete"
+      env:
+        GCP_APP_BUCKET: "PROJECT_TEST_BUCKET_NAME"
+        PROJECT_ID: ${{ secrets.GCP_PROJECT_TEST }}
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - run: echo "This job will run after test is complete"
+      env:
+        GCP_APP_BUCKET: "PROJECT_PROD_BUCKET_NAME"
+        PROJECT_ID: ${{ secrets.GCP_PROJECT_PROD }}
 
 ##### publish #########################################################
 
