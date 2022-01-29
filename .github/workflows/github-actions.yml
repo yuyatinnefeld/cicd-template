@@ -29,7 +29,6 @@ jobs:
 
   deploy-dev:
     needs: [test]
-    if: contains( github.ref, 'develop')
     runs-on: ubuntu-latest
     steps:
       - name: deploy dev project
@@ -37,6 +36,10 @@ jobs:
         env:
           GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
           PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
+    on:
+      push:
+        branches:    
+          - 'develop'
 
   deploy-test:
     needs: [test]
