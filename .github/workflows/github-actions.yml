@@ -71,19 +71,24 @@ jobs:
 
 ##### publish #########################################################
 
-  publish:
+  mkdocs-publish:
+    needs: [deploy-dev]
     runs-on: ubuntu-latest
     steps:
       - name: mkdocs publish
         run: echo "make mkdocs documentation...."
 
+  pypi-publish:
+    needs: [deploy-prod]
+    runs-on: ubuntu-latest
+    steps:
       - name: pypi publish
         run: echo "twine upload...."
 
 ##### test_production #########################################################
 
   test_production:
-    needs: [publish]
+    needs: [pypi-publish]
     runs-on: ubuntu-latest
     steps:
       - name: production test
@@ -92,7 +97,7 @@ jobs:
 ##### versioning #########################################################
 
   increment-version:
-    needs: [publish]
+    needs: [mkdocs-publish, pypi-publish]
     runs-on: ubuntu-latest
     steps:
       - name: inc minor or major version
