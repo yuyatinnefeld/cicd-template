@@ -36,10 +36,10 @@ jobs:
         env:
           GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
           PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
-    on:
-      push:
-        branches:    
-          - 'develop'
+        on:
+          push:
+            branches:    
+              - 'develop'
 
   deploy-test:
     needs: [test]
