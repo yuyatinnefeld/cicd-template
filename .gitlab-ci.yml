@@ -87,7 +87,7 @@ deploy-any:
     - gcloud auth activate-service-account --key-file ${GCP_SERVICE_ACCOUNT_KEY_DEV}
   variables:
     GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
-    PROJECT_ID: ${PROJECT_DEV}
+    PROJECT_ID: ${GCP_PROJECT_DEV}
   except:
     - master
     - /^release.*$/
@@ -102,7 +102,7 @@ deploy-dev:
     - gcloud auth activate-service-account --key-file ${GCP_SERVICE_ACCOUNT_KEY_DEV}
   variables:
     GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
-    PROJECT_ID: ${PROJECT_DEV}
+    PROJECT_ID: ${GCP_PROJECT_DEV}
   only:
     - develop
 
@@ -113,7 +113,7 @@ deploy-test:
     - gcloud auth activate-service-account --key-file ${GCP_SERVICE_ACCOUNT_KEY_TEST}
   variables:
     GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
-    PROJECT_ID: ${PROJECT_DEV}
+    PROJECT_ID: ${GCP_PROJECT_TEST}
   only:
     - /^release.*$/
     - /^hotfix.*$/
@@ -125,7 +125,7 @@ deploy-prod:
     - gcloud auth activate-service-account --key-file ${GCP_SERVICE_ACCOUNT_KEY_PROD}
   variables:
     GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
-    PROJECT_ID: ${PROJECT_DEV}
+    PROJECT_ID: ${GCP_PROJECT_PROD}
   only:
     - tags
   except:
