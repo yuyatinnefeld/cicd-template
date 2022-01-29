@@ -32,10 +32,11 @@ jobs:
     if: contains( github.ref, 'develop')
     runs-on: ubuntu-latest
     steps:
-      run: echo "This job will run after test is complete for "$PROJECT_ID""
-      env:
-        GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
-        PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
+      - name: deploy dev project
+        run: echo "This job will run after test is complete for "$PROJECT_ID""
+        env:
+          GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
 
 ##### publish #########################################################
 
