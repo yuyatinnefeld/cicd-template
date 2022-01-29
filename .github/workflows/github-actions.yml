@@ -36,7 +36,7 @@ jobs:
 
 ##### deploy #########################################################
 
-  dev-deploy:
+  deploy-dev:
     needs: [test]
     if: contains(github.ref, 'develop')
     runs-on: ubuntu-latest
@@ -47,7 +47,7 @@ jobs:
           GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
           PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
       
-  test-deploy:
+  deploy-test:
     needs: [test]
     if: contains(github.ref, '/^release.*$/') || contains(github.ref, '/^hotfix.*$/')
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
           GCP_APP_BUCKET: "PROJECT_TEST_BUCKET_NAME"
           PROJECT_ID: ${{ secrets.GCP_PROJECT_TEST }}
 
-  prod-deploy:
+  deploy-prod:
     needs: [test]
     if: contains(github.ref, 'master')
     runs-on: ubuntu-latest
@@ -71,11 +71,38 @@ jobs:
 
 ##### publish #########################################################
 
+  publish:
+    needs: [deploy-.*]
+    runs-on: ubuntu-latest
+    steps:
+      - name: mkdocs publish
+        run: echo "make mkdocs documentation...."
+
+      - name: pypi publish
+        run: echo "twine upload...."
+
+##### test_production #########################################################
+
+  test_production:
+    needs: [publish]
+    runs-on: ubuntu-latest
+    steps:
+      - name: production test
+        run: echo "execute production testing...."
 
 ##### versioning #########################################################
 
+  increment-version:
+    needs: [publish]
+    runs-on: ubuntu-latest
+    steps:
+      - name: inc minor or major version
+        if: github.ref == 'refs/heads/develop'
+        run: echo "incrementing inc-major or inc-major version...."
 
-##### test_production #########################################################
+      - name: inc fix version
+        if: github.ref == 'refs/heads/hotfix'
+        run: echo "incrementing inc-fix version..."
 
 
 
