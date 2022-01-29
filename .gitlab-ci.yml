@@ -1,0 +1,203 @@
+variables:
+  PYTHON_IMAGE: python:3.7-slim
+  CLOUD_SDK_IMAGE: google/cloud-sdk:slim
+
+stages:
+  - build
+  - test
+  - deploy
+  - publish
+  - versioning
+  - test_production
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+before_script:
+  - python3 -V
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+
+##### build #########################################################
+
+build_job_1:
+  stage: build
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "building ${CI_JOB_NAME}...."
+
+build_job_2:
+  stage: build
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "building ${CI_JOB_NAME}...."
+
+
+##### test #########################################################
+
+pytest:
+  stage: test
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "unit test with ${CI_JOB_NAME}...."
+
+pylint:
+  stage: test
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "static code analyze with ${CI_JOB_NAME}...."
+
+flake8:
+  stage: test
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "pycodestyle (pep8) check with ${CI_JOB_NAME}...."
+
+mypy:
+  stage: test
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "static type check with ${CI_JOB_NAME}...."
+
+bandit:
+  stage: test
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "security check with ${CI_JOB_NAME}...."
+    
+##### deployment #########################################################
+
+.deployment-process:
+  stage: deploy
+  image: ${CLOUD_SDK_IMAGE}
+  before_script:
+    - gcloud auth activate-service-account --key-file ${GCP_SERVICE_ACCOUNT_KEY}
+  script:
+    - gcloud config set project ${PROJECT_ID}
+    - echo "deploying ${CI_JOB_NAME}...."
+
+deploy-any:
+  extends:
+    - .deployment-process
+  variables:
+    GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+    PROJECT_ID: ${PROJECT_DEV}
+    GCP_SERVICE_ACCOUNT_KEY: ${GCP_SERVICE_ACCOUNT_KEY_DEV}
+  except:
+    - master
+    - /^release.*$/
+    - /^hotfix.*$/
+    - develop
+    - tags
+
+deploy-dev:
+  extends:
+    - .deployment-process
+  variables:
+    GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+    PROJECT_ID: ${PROJECT_DEV}
+    GCP_SERVICE_ACCOUNT_KEY: ${GCP_SERVICE_ACCOUNT_KEY_DEV}
+  only:
+    - develop
+
+deploy-test:
+  extends:
+    - .deployment-process
+  variables:
+    GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+    PROJECT_ID: ${PROJECT_DEV}
+    GCP_SERVICE_ACCOUNT_KEY: ${GCP_SERVICE_ACCOUNT_KEY_TEST}
+  only:
+    - /^release.*$/
+    - /^hotfix.*$/
+
+deploy-prod:
+  extends:
+    - .deployment-process
+  variables:
+    GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+    PROJECT_ID: ${PROJECT_DEV}
+    GCP_SERVICE_ACCOUNT_KEY: ${GCP_SERVICE_ACCOUNT_KEY_PROD}
+  only:
+    - tags
+  except:
+    - branches
+  when: manual
+
+##### publish #########################################################
+
+mkdocs_publish:
+  stage: publish
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "make mkdocs documentation...."
+  only:
+    - master
+  when: manual
+
+artifacts_upload:
+  stage: publish
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "twine upload...."
+  only:
+    - master
+  when: manual
+
+##### test-production #########################################################
+
+.prod_test:
+  stage: test_production
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "execute ${CI_JOB_NAME}...."
+  only:
+    - master
+  when: manual
+
+integration_test:
+  extends: .prod_test
+
+api_test:
+  extends: .prod_test
+
+security_test:
+  extends: .prod_test
+
+##### versioning #########################################################
+
+.increment-version:
+  stage: versioning
+  image: ${PYTHON_IMAGE}
+  script:
+    - echo "incrementing ${POSITION} version...."
+
+inc-major:
+  extends: .increment-version
+  variables:
+    POSITION: major
+    BRANCH: develop
+  only:
+    - develop
+  when: manual
+
+inc-minor:
+  extends: .increment-version
+  variables:
+    POSITION: minor
+    BRANCH: develop
+  only:
+    - develop
+  when: manual
+
+inc-fix:
+  extends: .increment-version
+  variables:
+    POSITION: fix
+    BRANCH: ${CI_COMMIT_BRANCH}
+  only:
+    - /^hotfix.*$/
+  when: manual
