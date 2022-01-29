@@ -33,9 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "This job will run after test is complete"
-      env:
-        GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
-        PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
 
 ##### publish #########################################################
 
