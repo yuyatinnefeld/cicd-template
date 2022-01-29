@@ -1,37 +1,37 @@
 name: GitHub CICD Pipeline
- on: [push]
-  jobs:
-    container-job:
-      runs-on: python:3.7-slim
+on: [push]
+
+jobs:
 
 ##### build #########################################################
-    build_job_1:
-      steps:
-        - run: echo "building ${{ env.GITHUB_JOB }}...."
+  build_job_1:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "building ${{ env.GITHUB_JOB }}...."
 
-    build_job_2:
-      steps:
-        - run: echo "building ${{ env.GITHUB_JOB }}...."
+  build_job_2:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "building ${{ env.GITHUB_JOB }}...."
 
 ##### test #########################################################
-    pytest:
-      needs: [build_job_1, build_job_2]
-      steps:
-        - run: echo "unit test with ${{ env.GITHUB_JOB }}...."
-        - run: echo "🍏 This job's status is ${{ job.status }}."
-
-    pylint:
-      needs: [build_job_1, build_job_2]
-      steps:
-        - run: echo "static code analyze with ${{ env.GITHUB_JOB }}...."
+  test:
+    runs-on: ubuntu-latest
+    needs: [build_job_1, build_job_2]
+    steps:
+      - run: echo "unit test with pytest...."
+      - run: echo "static code analyze with pylint...."
+      - run: echo "pycodestyle (pep8) check with flake8...."
+      - run: echo "static type check with mypy...."
+      - run: echo "security check with bandit...."
 
 ##### deploy #########################################################
 
-    deploy_ab:
-      needs: [pytest, pylint]
-      steps:
-        - run: echo "This job will run after test_ab is complete"
-
+  deploy_ab:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - run: echo "This job will run after test_ab is complete"
 
 ##### publish #########################################################
 
