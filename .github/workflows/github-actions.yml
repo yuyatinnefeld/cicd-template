@@ -33,10 +33,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: deploy dev project
-        run: echo "This job will run after test is complete for "$PROJECT_ID""
+        run: echo "This job will run after test is complete for $PROJECT_ID"
         env:
           GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
           PROJECT_ID: ${{ secrets.GCP_PROJECT_DEV }}
+
+  deploy-test:
+    needs: [test]
+    if: contains( github.ref, '/^release.*$/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy dev project
+        run: echo "This job will run after test is complete for $PROJECT_ID"
+        env:
+          GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_TEST }}
+
+  deploy-prod:
+    needs: [test]
+    if: contains( github.ref, 'master')
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy dev project
+        run: echo "This job will run after test is complete for $PROJECT_ID"
+        env:
+          GCP_APP_BUCKET: "PROJECT_DEV_BUCKET_NAME"
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_PROD }}
 
 ##### publish #########################################################
 
