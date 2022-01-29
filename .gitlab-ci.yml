@@ -28,6 +28,7 @@ build_job_1:
   image: ${PYTHON_IMAGE}
   script:
     - echo "building ${CI_JOB_NAME}...."
+    - pip install requests
 
 build_job_2:
   stage: build
