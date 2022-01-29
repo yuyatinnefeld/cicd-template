@@ -72,7 +72,6 @@ jobs:
 ##### publish #########################################################
 
   publish:
-    needs: [deploy-.*]
     runs-on: ubuntu-latest
     steps:
       - name: mkdocs publish
