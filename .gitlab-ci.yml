@@ -29,7 +29,8 @@ build:
   stage: build
   image: ${PYTHON_IMAGE}
   script:
-    - uvicorn app.main:app --reload
+    - uvicorn app.main:app --reload || true
+  timeout: 2m
 
 
 ##### test #########################################################
