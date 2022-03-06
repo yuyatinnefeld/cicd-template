@@ -21,7 +21,6 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - pip install --upgrade -r requirements.txt
 
 ##### build #########################################################
 
@@ -29,6 +28,7 @@ build:
   stage: build
   image: ${PYTHON_IMAGE}
   script:
+    - pip install --upgrade -r requirements.txt
     - echo "uvicorn app.main:app --reload"
 
 
