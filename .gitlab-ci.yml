@@ -1,6 +1,7 @@
 variables:
-  PYTHON_IMAGE: python:3.7-slim
+  PYTHON_IMAGE: python:3.9-slim
   CLOUD_SDK_IMAGE: google/cloud-sdk:slim
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 stages:
   - build
